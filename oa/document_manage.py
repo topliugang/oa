@@ -2,9 +2,10 @@
 from lib_of_db_and_xls import *
 
 import sys
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
+from PyQt5.QtCore import Qt, QRect
+from PyQt5.QtGui import QFont, QPainter
 from PyQt5.QtWidgets import *
+from PyQt5.QtPrintSupport import QPrintDialog, QPrinter
 
 
 class DocumentRecorder(QWidget):
@@ -69,11 +70,14 @@ class DocumentRecorder(QWidget):
         self.submit_button.show()
         self.submit_button.clicked.connect(self.submit)
 
-        # self.reset_button = QPushButton('&reset')
-        # self.reset_button.show()
-        # self.reset_button.clicked.connect(self.reset)
+        self.print_button = QPushButton('&print')
+        self.print_button.setFont(self._font)
+        self.print_button.show()
+        self.print_button.clicked.connect(self._print)
+
         buttonLayout = QHBoxLayout()
         buttonLayout.addWidget(self.submit_button)
+        buttonLayout.addWidget(self.print_button)
 
         mainLayout = QGridLayout()
         mainLayout.addWidget(serial_number_label, 0, 0)
@@ -133,10 +137,13 @@ class DocumentRecorder(QWidget):
                 document_date, document_name, copy, to_staff, recycle_date)
         insert(sql, data)
 
-
-
-        # def reset(self):
-        # 	pass
+    def _print(self):
+        printer = QPrinter()
+        dialog = QPrintDialog(printer, self)
+        if dialog.exec_():
+            painter = QPainter(printer)
+            rect = QRect(10, 20, 80, 60)
+            painter.drawEllipse(rect)
 
 
 if __name__ == '__main__':
