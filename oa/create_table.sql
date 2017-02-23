@@ -8,7 +8,9 @@ create table room(
 	num text,
 	department text,
 	tel text,
-	tel2 text
+	tel2 text,
+	littletel text, 
+	littletel2 text
 );
 
 create table staff(
