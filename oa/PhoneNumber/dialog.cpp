@@ -6,7 +6,7 @@
 #include<QDebug>
 
 
-bool connect()
+bool Dialog::connect_db()
 {
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName("C:\\develop\\oa\\oa\\database.db");
@@ -20,12 +20,46 @@ bool connect()
     }
 }
 
+QString Dialog::query_room(QString num)
+{
+    QString ret ;
+
+    QSqlQuery query;
+    query.prepare("select department from room where littletel=:lt1 or littletel2=:lt2");
+    query.bindValue(":lt1", num);
+    query.bindValue(":lt2", num);
+    query.exec();
+
+    if(query.first())
+    {
+        ret = query.value("department").toString();
+    }
+    return ret;
+}
+
+QString Dialog::query_staff(QString num)
+{
+    QString ret ;
+
+    QSqlQuery query;
+    query.prepare("select name from staff where littlephone=:lp1 or littlephone2=:lp2");
+    query.bindValue(":lp1", num);
+    query.bindValue(":lp2", num);
+    query.exec();
+
+    if(query.first())
+    {
+        ret = query.value("name").toString();
+    }
+    return ret;
+}
+
 Dialog::Dialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Dialog)
 {
     ui->setupUi(this);
-    connect();
+    connect_db();
 
 
 }
@@ -39,23 +73,21 @@ void Dialog::on_numberLineEdit_textChanged(const QString &arg1)
 {
     qDebug()<<"==============================";
     qDebug()<<"arg1: "<<arg1;
-    QSqlQuery query;
 
-
-    query.prepare("select * from room where littletel=:lt1 or littletel2=:lt2");
-    //query.prepare("select * from room where littletel='66899' or littletel2='66899'");
-
-    query.bindValue(":lt1", arg1);
-    query.bindValue(":lt2", arg1);
-    query.exec();
-
-    qDebug()<<"is active: "<<query.isActive();
-    qDebug()<<"size: "<<query.size();
-    //qDebug()<<query.first();
-
-    if(query.first())
+    QString department = query_room(arg1);
+    if (!department.isEmpty())
     {
-        QString name = query.value("department").toString();
-        ui->nameLabel->setText(name);
+        ui->nameLabel->setText(department);
     }
+    else
+    {
+        QString name = query_staff(arg1);
+        if (!name.isEmpty())
+        {
+            ui->nameLabel->setText(name);
+        }
+    }
+
+
+
 }

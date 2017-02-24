@@ -20,6 +20,9 @@ private slots:
 
 private:
     Ui::Dialog *ui;
+    bool connect_db();
+    QString query_room(QString num);
+    QString query_staff(QString num);
 };
 
 #endif // DIALOG_H
